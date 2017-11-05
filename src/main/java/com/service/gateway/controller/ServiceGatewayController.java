@@ -1,37 +1,42 @@
 package com.service.gateway.controller;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import com.service.gateway.services.WorldPopulationService;
+
 
 @RestController
 public class ServiceGatewayController {
 	
+	static Logger logger = Logger.getLogger(ServiceGatewayController.class);
 	@Autowired
-    RestTemplate restTemplate;
+	private WorldPopulationService worldPopulationService;
+	
+	@Bean
+	public RestTemplate rest(RestTemplateBuilder builder) {
+	  return builder.build();
+	}
 	
 	@RequestMapping(value = "/worldpopulation/getPopulation", method = RequestMethod.GET)
 	public String populationStatusByCountry (@RequestParam String country) {
-		
-		System.out.println("Getting Country details for " + country);
-		String response = restTemplate.exchange("http://worldpopulation/getPopulation?country={country}",
-                HttpMethod.GET, null, new ParameterizedTypeReference<String>() {}, country).getBody();
-		
+		logger.info("Request reached at Gateway for "+country+" at "+System.currentTimeMillis());
+		String response = worldPopulationService.populationStatusByCountry(country);
+		logger.info("Response received at Gateway for "+country+" at "+System.currentTimeMillis());
 		return response;
 		
 	}
 	
-	@Bean
+	/*@Bean
     @LoadBalanced
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
-
+*/
 }
