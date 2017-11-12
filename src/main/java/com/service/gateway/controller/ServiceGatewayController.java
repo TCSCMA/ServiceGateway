@@ -33,6 +33,16 @@ public class ServiceGatewayController {
 		
 	}
 	
+	
+	@RequestMapping(value = "/worldcountry/getCountry", method = RequestMethod.GET)
+	public String getCountryDetails (@RequestParam String country) {
+		logger.info("Request reached at Gateway for "+country+" at "+System.currentTimeMillis());
+		String response = worldPopulationService.populationStatusByCountry(country);
+		logger.info("Response received at Gateway for "+country+" at "+System.currentTimeMillis());
+		return response;
+		
+	}
+	
 	/*@Bean
     @LoadBalanced
     public RestTemplate restTemplate() {
